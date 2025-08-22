@@ -2,9 +2,10 @@ package com.artevo.artevobackend.application.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Artist {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,14 +14,10 @@ public class Artist {
     private String username;
     private String password;
 
-    // Default-Konstruktor für JPA
-    protected Artist() {}
+    @OneToMany(mappedBy = "artist")
+    private List<Design> designs; // alle hochgeladenen Designs
 
-    public Artist(String name, String username, String password) {
-        this.name = name;
-        this.username = username;
-        this.password = password;
-    }
+    public Artist() {}
 
     public Long getId() {
         return id;
@@ -52,5 +49,13 @@ public class Artist {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Design> getDesigns() {
+        return designs;
+    }
+
+    public void setDesigns(List<Design> designs) {
+        this.designs = designs;
     }
 }

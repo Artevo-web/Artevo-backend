@@ -11,14 +11,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF deaktivieren für API
+                .csrf(csrf -> csrf.disable()) // CSRF aus
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll() // Public Endpoints
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/**").permitAll() // alles unter /api/** frei
+                        .anyRequest().permitAll() // auch Rest erstmal frei
                 )
-                .httpBasic(httpBasic -> httpBasic.disable()); // Default Login deaktivieren
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .formLogin(login -> login.disable()) // Login-Formular deaktivieren
+                .httpBasic(basic -> basic.disable()) // Basic Auth deaktivieren
+                .logout(logout -> logout.disable()) // Logout deaktivieren
+                .sessionManagement(session -> session.disable()); // Session Management komplett deaktivieren
 
         return http.build();
     }
@@ -30,7 +34,7 @@ public class SecurityConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("POST", "GET", "OPTIONS");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
         };
     }
